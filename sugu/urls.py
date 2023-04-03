@@ -7,7 +7,7 @@ router = routers.SimpleRouter()
 
 # ========> Enregistrement des URLs de base
 
-# api/stores/ and api/stores/{store_pk}/
+# api/stores/ and api/stores/{store_pk}/ and api/stores/?categories=[category_id1, category_id2, ...]
 router.register('stores', StoreViewSet, basename='stores')
 
 # api/categories/ and api/categories/{category_pk}/
@@ -16,7 +16,7 @@ router.register('categories', CategoryViewSet, basename='categories')
 # api/subcategories/ and api/subcategories/{subcategory_pk}/
 router.register('subcategories', SubCategoryViewSet, basename='sub-categories')
 
-# api/products/ and api/products/{product_pk}/
+# api/products/ and api/products/{product_pk}/ and api/products/?categories=[category_id1, category_id2, ...]
 router.register('products', ProductViewSet, basename='products')
 
 # api/admin/stores/ and api/admin/stores/{store_pk}/

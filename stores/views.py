@@ -18,7 +18,7 @@ class StoreViewSet(viewsets.ReadOnlyModelViewSet):
             categories = categories.replace('[', '').replace(']', '')
             for param in categories.split(','):
                 params.append(param)
-            queryset = queryset.filter(categories__in=params)
+            queryset = queryset.filter(categories__in=params).distinct()
         return queryset
 
     def get_serializer_class(self):
