@@ -35,7 +35,7 @@ class SubCategoryDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SubCategory
-        fields = ['id', 'name', 'description', 'active', 'date_created', 'date_last_updated', 'category']
+        fields = '__all__'
 
 
 class CategoryDetailSerializer(serializers.ModelSerializer):
@@ -43,7 +43,7 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'active', 'date_created', 'date_last_updated', 'description', 'sub_categories']
+        fields = '__all__'
 
 
 class StoreDetailSerializer(serializers.ModelSerializer):
@@ -51,8 +51,7 @@ class StoreDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Store
-        fields = ['id', 'name', 'active', 'is_up_to_date', 'size', 'is_popular', 'description', 'more_precision',
-                  'num_tel1', 'num_tel2', 'email', 'categories']
+        fields = '__all__'
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
@@ -60,5 +59,4 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'description', 'active', 'date_created', 'date_last_updated', 'nb_like',
-                  'min_price', 'max_price', 'is_popular', 'genre', 'store', 'sub_category', 'categories']
+        fields = '__all__'
