@@ -44,7 +44,7 @@ class OrderAdmin(admin.ModelAdmin):
 
 
 class CardAdmin(admin.ModelAdmin):
-    list_display = [f.name for f in Card._meta.fields]
+    list_display = [f.name for f in Cart._meta.fields]
 
 
 class ProductHistoryAdmin(admin.ModelAdmin):
@@ -114,7 +114,7 @@ admin.site.register(Follow, FollowAdmin)
 admin.site.register(Delivery, DeliveryAdmin)
 admin.site.register(DeliveryMan, DeliveryManAdmin)
 admin.site.register(ProductHistory, ProductHistoryAdmin)
-admin.site.register(Card, CardAdmin)
+admin.site.register(Cart, CardAdmin)
 admin.site.register(Order, OrderAdmin)
 admin.site.register(TargetedAdvertising, TargetedAdvertisingAdmin)
 admin.site.register(Promotion, PromotionAdmin)
