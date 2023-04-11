@@ -16,7 +16,7 @@ METHOD_OF_PAYMENT = (
         ('MM', 'Moov Money'),
         ('SM', 'Sama Money'),
     )
-LENGTH_METHOD_OF_PAYMENT = 5
+LENGTH_METHOD_OF_PAYMENT = 10
 
 MODE_TRANSPORT = (
     ('moto', 'Moto'),
@@ -35,6 +35,7 @@ PROFESSION = (
     ('etudiant', 'Etudiant'),
     ('fonctionnaire', 'Fonctionnaire'),
     ('commercant', 'Commerçant'),
+    ('autre', 'Autre')
 )
 LENGTH_PROFESSION = 20
 
@@ -114,27 +115,6 @@ class Neighborhood(models.Model):
         return f"{self.name}"
 
 
-class Address(models.Model):
-    """
-        Adresse :
-            La classe correspondant à une adresse
-    """
-
-    name = models.CharField(max_length=20)
-    reference = models.CharField(max_length=100)
-    geolocation = models.URLField(null=True, blank=True)
-    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True)
-    region = models.ForeignKey(
-        Region, on_delete=models.SET_NULL, null=True,
-    )
-    neighborhood = models.ForeignKey(
-        Neighborhood, on_delete=models.SET_NULL, null=True
-    )
-
-    def __str__(self):
-        return f"{self.name}"
-
-
 class User(models.Model):
     """
         Utilisateur :
@@ -168,43 +148,6 @@ class Seller(Buyer):
     """
 
 
-class DeliveryMan(User):
-    """
-        Livreur :
-            Cette classe fait référence à un livreur de SUGU
-    """
-    address = models.OneToOneField(Address, on_delete=models.SET_NULL, null=True, blank=True)
-    mode_transport = models.CharField(choices=MODE_TRANSPORT, max_length=10)
-    current_position = models.URLField(null=True)
-
-
-class ProfileInfo(models.Model):
-    """
-        Informations de profile d'un acheteur :
-            Cette classe contient l'ensemble deAs informations precis sur le profile de l'acheteur.
-    """
-    birth_day = models.DateField()
-    device_type = MultiSelectField(choices=DEVICE_TYPE, max_length=LENGTH_DEVICE_TYPE)
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, default=None)
-    buyer = models.OneToOneField(Buyer, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"Information Profile-{self.buyer}"
-
-
-class Cart(models.Model):
-    """
-        Panier :
-            Cette classe représente le panier de l'acheteur
-    """
-    total_nb_products = models.IntegerField()
-    total_price = models.IntegerField()  # prix total de l'ensemble des commandes dans le panier
-    buyer = models.OneToOneField(Buyer, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"Panier-{self.buyer}"
-
-
 class Category(models.Model):
     """
         Catégorie :
@@ -218,6 +161,71 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProfileInfo(models.Model):
+    """
+        Informations de profile d'un acheteur :
+            Cette classe contient l'ensemble deAs informations precis sur le profile de l'acheteur.
+    """
+    birth_day = models.DateField()
+    device_type = models.CharField(choices=DEVICE_TYPE, max_length=LENGTH_DEVICE_TYPE)
+    genre = models.CharField(choices=GENRE, max_length=LENGTH_GENRE)
+    profession = models.CharField(choices=PROFESSION, max_length=LENGTH_PROFESSION)
+    register_type = models.CharField(choices=REGISTER_TYPE, max_length=LENGTH_REGISTER_TYPE)  # c'est m'administrateur
+    # qui renseigne ce champ
+    method_of_payment = MultiSelectField(choices=METHOD_OF_PAYMENT, max_length=LENGTH_METHOD_OF_PAYMENT)
+    account_type = models.CharField(choices=ACCOUNT_TYPE, max_length=LENGTH_ACCOUNT_TYPE)
+
+    buyer = models.OneToOneField(Buyer, on_delete=models.CASCADE)
+    categories = models.ManyToManyField(Category)
+
+    def __str__(self):
+        return f"Information Profile-{self.buyer}"
+
+
+class DeliveryMan(models.Model):
+    """
+        Livreur :
+            Cette classe fait référence à un livreur de SUGU
+    """
+    buyer = models.OneToOneField(Buyer, on_delete=models.CASCADE, null=True, blank=True, default=None)
+    mode_transport = models.CharField(choices=MODE_TRANSPORT, max_length=10)
+    current_geolocation_position = models.URLField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Livreur-{self.buyer}"
+
+
+class Address(models.Model):
+    """
+        Adresse :
+            La classe correspondant à une adresse
+    """
+
+    name = models.CharField(max_length=20)
+    reference = models.CharField(max_length=100)
+    geolocation = models.URLField(null=True, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True)
+    region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True,)
+    neighborhood = models.ForeignKey(Neighborhood, on_delete=models.SET_NULL, null=True)
+    profile_info = models.ForeignKey(ProfileInfo, on_delete=models.CASCADE, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
+
+
+class Cart(models.Model):
+    """
+        Panier :
+            Cette classe représente le panier de l'acheteur
+    """
+    total_nb_products = models.IntegerField()
+    total_price = models.IntegerField()  # prix total de l'ensemble des commandes dans le panier
+    buyer = models.OneToOneField(Buyer, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Panier-{self.buyer}"
 
 
 class Store(models.Model):
@@ -343,15 +351,14 @@ class Order(models.Model):
 
 class Delivery(models.Model):
     approximate_duration = models.DurationField()
-    actuel_duration = models.DurationField()
-    delivered = models.BooleanField()  # pour savoir si la livraison a bien été faite
+    actuel_duration = models.DurationField(null=True, blank=True)
+    delivered = models.BooleanField(default=False)  # pour savoir si la livraison a bien été faite
     delivery_price = models.IntegerField()
-    QR_code = models.URLField(null=True)
+    QR_code = models.URLField(null=True, blank=True)
 
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
     order = models.OneToOneField(Order, on_delete=models.CASCADE)
     delivery_man = models.ForeignKey(DeliveryMan, on_delete=models.SET_NULL, null=True)
-
 
     def __str__(self):
         return f"Livraison-{self.delivery_man}-{self.order}"
@@ -471,7 +478,7 @@ class TargetedAdvertising(models.Model):
         choices=PROFESSION, default=['etudient', 'fonctionnaire', 'commercant'], max_length=LENGTH_PROFESSION
     )
     register_type = MultiSelectField(
-        REGISTER_TYPE, default=['google', 'numero', 'email'], max_length=LENGTH_REGISTER_TYPE
+        choices=REGISTER_TYPE, default=['google', 'numero', 'email'], max_length=LENGTH_REGISTER_TYPE
     )
     method_of_payment = MultiSelectField(
         choices=METHOD_OF_PAYMENT, default=['OM', 'MM', 'SM'], max_length=LENGTH_METHOD_OF_PAYMENT
