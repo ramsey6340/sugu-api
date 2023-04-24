@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.shortcuts import render
 from rest_framework import viewsets
 
@@ -69,6 +71,105 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
                 params.append(int(param))
             queryset = queryset.filter(categories__in=params).distinct()
         return queryset
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return self.detail_serializer_class
+        return super().get_serializer_class()
+
+
+class BuyerViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = BuyerListSerializer
+    detail_serializer_class = BuyerDetailSerializer
+
+    def get_queryset(self):
+        first_name_params = list()
+        last_name_params = list()
+        first_name_startswith_params = list()
+        last_name_startswith_params = list()
+
+        queryset = Buyer.objects.filter(active=True)
+
+        first_names = self.request.GET.get('first_names')
+        last_names = self.request.GET.get('last_names')
+        first_name_startswith = self.request.GET.get('first_name_startswith')
+        last_name_startswith = self.request.GET.get('last_name_startswith')
+        email = self.request.GET.get('email')
+        num_tel = self.request.GET.get('num_tel')
+        birth_day = self.request.GET.get('birth_day')
+        device_type = self.request.GET.get('device_type')
+        genre = self.request.GET.get('genre')
+        profession = self.request.GET.get('profession')
+        register_type = self.request.GET.get('register_type')
+        method_of_payment = self.request.GET.get('method_of_payment')
+        account_type = self.request.GET.get('account_type')
+        register_year = self.request.GET.get('register_year')
+        register_month = self.request.GET.get('register_month')
+        register_day = self.request.GET.get('register_day')
+
+        first_names_list_queryset = list()
+        last_names_list_queryset = list()
+        fist_name_startswith_queryset = list()
+        last_name_startswith_queryset = list()
+
+        if first_names is not None:
+            if '[' in first_names and ']' in first_names:
+                first_names = first_names.replace('[', '').replace(']', '')
+                for param in first_names.split(','):
+                    first_name_params.append(str(param.capitalize()))
+                first_names_list_queryset = queryset.filter(first_name__in=first_name_params).distinct()
+            else:
+                first_names_list_queryset = queryset.filter(first_name__in=first_names).distinct()
+
+        if last_names is not None:
+            if '[' in last_names and ']' in last_names:
+                last_names = last_names.replace('[', '').replace(']', '')
+                for param in last_names.split(','):
+                    last_name_params.append(str(param.capitalize()))
+                last_names_list_queryset = queryset.filter(last_name__in=last_name_params).distinct()
+            else:
+                last_names_list_queryset = queryset.filter(last_name__in=last_names).distinct()
+
+        # celui-là ne marche pas !
+        if first_name_startswith is not None:
+            first_name_startswith = first_name_startswith.replace('[', '').replace(']', '')
+            for param in first_name_startswith.split(','):
+                first_name_startswith_params.append(str(param.capitalize()))
+            fist_name_startswith_queryset = queryset.filter(
+                first_name__istartswith=first_name_startswith_params
+            ).distinct()
+
+        # celui-là ne marche pas !
+        if last_name_startswith is not None:
+            last_name_startswith = last_name_startswith.replace('[', '').replace(']', '')
+            for param in last_name_startswith.split(','):
+                last_name_startswith_params.append(str(param.capitalize()))
+            last_name_startswith_queryset = queryset.filter(
+                last_name__istartswith=last_name_startswith_params
+            ).distinct()
+
+        response = list(
+            chain(
+                first_names_list_queryset, last_names_list_queryset,
+                fist_name_startswith_queryset, last_name_startswith_queryset)
+        )
+        if response:
+            return response
+        else:
+            return queryset
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return self.detail_serializer_class
+        return super().get_serializer_class()
+
+
+class SellerViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = SellerListSerializer
+    detail_serializer_class = SellerDetailSerializer
+
+    def get_queryset(self):
+        return Seller.objects.filter(active=True)
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -427,10 +528,50 @@ class AdminProductViewSet(viewsets.ModelViewSet):
 
 class AdminProfileInfoViewSet(viewsets.ModelViewSet):
     serializer_class = ProfileInfoListSerializer
-    detail_serializer_class = ProfileInfoDetailSerializer
+    detail_serializer_class = ProfileInfoDetailAdminSerializer
 
     def get_queryset(self):
         return ProfileInfo.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return self.detail_serializer_class
+        elif self.action == 'retrieve':
+            return self.detail_serializer_class
+        elif self.action == 'update':
+            return self.detail_serializer_class
+        elif self.action == 'partial_update':
+            return self.detail_serializer_class
+        else:
+            return super().get_serializer_class()
+
+
+class AdminBuyerViewSet(viewsets.ModelViewSet):
+    serializer_class = BuyerListSerializer
+    detail_serializer_class = BuyerDetailAdminSerializer
+
+    def get_queryset(self):
+        return Buyer.objects.all()
+
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return self.detail_serializer_class
+        elif self.action == 'retrieve':
+            return self.detail_serializer_class
+        elif self.action == 'update':
+            return self.detail_serializer_class
+        elif self.action == 'partial_update':
+            return self.detail_serializer_class
+        else:
+            return super().get_serializer_class()
+
+
+class AdminSellerViewSet(viewsets.ModelViewSet):
+    serializer_class = SellerListSerializer
+    detail_serializer_class = SellerDetailAdminSerializer
+
+    def get_queryset(self):
+        return Seller.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'create':

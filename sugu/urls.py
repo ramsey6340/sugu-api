@@ -19,6 +19,12 @@ router.register('subcategories', SubCategoryViewSet, basename='sub-categories')
 # api/products/ and api/products/{product_pk}/ and api/products/?categories=[category_id1, category_id2, ...]
 router.register('products', ProductViewSet, basename='products')
 
+# api/buyers/ and api/buyers/{buyer_pk}/
+router.register('buyers', BuyerViewSet, basename='buyers')
+
+# api/sellers/ and api/sellers/{seller_pk}/
+router.register('sellers', SellerViewSet, basename='sellers')
+
 # api/profileinfos/ and api/profileinfos/{profileinfo_pk}/
 router.register('profileinfos', ProfileInfoViewSet, basename='profileinfos')
 
@@ -82,6 +88,12 @@ router.register('admin/subcategories', AdminSubCategoryViewSet, basename='admin-
 
 # api/admin/products/ and api/admin/products/{product_pk}/
 router.register('admin/products', AdminProductViewSet, basename='admin-products')
+
+# api/admin/buyers/ and api/admin/buyers/{buyer_pk}/
+router.register('buyers', AdminBuyerViewSet, basename='admin-buyers')
+
+# api/admin/sellers/ and api/admin/sellers/{seller_pk}/
+router.register('sellers', AdminSellerViewSet, basename='admin-sellers')
 
 # api/admin/profileinfos/ and api/admin/profileinfos/{profileinfo_pk}/
 router.register('admin/profileinfos', AdminProfileInfoViewSet, basename='admin-profileinfos')

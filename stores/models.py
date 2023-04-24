@@ -29,7 +29,7 @@ DEVICE_TYPE = (
     ('android', 'Android'),
     ('huawei', 'Huawei'),
 )
-LENGTH_DEVICE_TYPE = 20
+LENGTH_DEVICE_TYPE = 30
 
 PROFESSION = (
     ('etudiant', 'Etudiant'),
@@ -37,14 +37,14 @@ PROFESSION = (
     ('commercant', 'Commerçant'),
     ('autre', 'Autre')
 )
-LENGTH_PROFESSION = 20
+LENGTH_PROFESSION = 40
 
 REGISTER_TYPE = (
     ('google', 'Google'),
     ('numero', 'Numéro de téléphone'),
     ('email', 'Email'),
 )
-LENGTH_REGISTER_TYPE = 10
+LENGTH_REGISTER_TYPE = 30
 
 ACCOUNT_TYPE = (
     ('buyer', 'Acheteur'),
@@ -176,6 +176,7 @@ class ProfileInfo(models.Model):
     # qui renseigne ce champ
     method_of_payment = MultiSelectField(choices=METHOD_OF_PAYMENT, max_length=LENGTH_METHOD_OF_PAYMENT)
     account_type = models.CharField(choices=ACCOUNT_TYPE, max_length=LENGTH_ACCOUNT_TYPE)
+    register_date = models.DateTimeField(auto_now_add=True)
 
     buyer = models.OneToOneField(Buyer, on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category)
@@ -209,7 +210,7 @@ class Address(models.Model):
     country = models.ForeignKey(Country, on_delete=models.SET_NULL, null=True)
     region = models.ForeignKey(Region, on_delete=models.SET_NULL, null=True,)
     neighborhood = models.ForeignKey(Neighborhood, on_delete=models.SET_NULL, null=True)
-    profile_info = models.ForeignKey(ProfileInfo, on_delete=models.CASCADE, blank=True)
+    profile_info = models.ForeignKey(ProfileInfo, on_delete=models.CASCADE, blank=True, related_name='addresses')
 
     def __str__(self):
         return f"{self.name}"
@@ -456,26 +457,26 @@ class TargetedAdvertising(models.Model):
     # On lui demandera de les séparer par une virgule (,) ainsi on fera un Split pour récupérer les noms sous forme
     # de liste.
     last_name_list = models.CharField(blank=True, null=True, max_length=10)
-    first_name_list_starting_with = models.CharField(blank=True, null=True, max_length=10)  # Liste de caractères
+    first_name_startswith = models.CharField(blank=True, null=True, max_length=10)  # Liste de caractères
     # pour les debuts de prénom
-    last_name_list_starting_with = models.CharField(blank=True, null=True, max_length=10)  # Liste de caractères
+    last_name_startswith = models.CharField(blank=True, null=True, max_length=10)  # Liste de caractères
     # pour les debuts de nom
-    nb_follower = models.IntegerField(null=True)  # nombre d'abonnés
-    nb_following = models.IntegerField(null=True)  # nombre d'abonnements
+    nb_follower = models.IntegerField(null=True, blank=True)  # nombre d'abonnés
+    nb_following = models.IntegerField(null=True, blank=True)  # nombre d'abonnements
     year_of_birth = models.IntegerField(
-        validators=[MinValueValidator(1923), MaxValueValidator(datetime.date.today().year)], null=True
+        validators=[MinValueValidator(1923), MaxValueValidator(datetime.date.today().year)], null=True, blank=True
     )
-    month_of_birth = models.CharField(choices=MONTH, max_length=10, null=True)
-    day_of_birth = models.IntegerField(null=True, validators=[MaxValueValidator(31), MinValueValidator(1)])
-    name_day_of_birth = MultiSelectField(choices=NAME_DAY_OF_BIRTH, null=True, max_length=LENGTH_NAME_DAY_OF_BIRTH)
-    follow_me = models.BooleanField(null=True)
+    month_of_birth = models.CharField(choices=MONTH, max_length=10, null=True, blank=True)
+    day_of_birth = models.IntegerField(null=True, validators=[MaxValueValidator(31), MinValueValidator(1)], blank=True)
+    name_day_of_birth = MultiSelectField(choices=NAME_DAY_OF_BIRTH, null=True, max_length=LENGTH_NAME_DAY_OF_BIRTH, blank=True)
+    follow_me = models.BooleanField(null=True, blank=True)
     categories = models.ManyToManyField(Category)
     genre = MultiSelectField(choices=GENRE, default=['H', 'F'], max_length=LENGTH_GENRE)
     device_type = MultiSelectField(
         choices=DEVICE_TYPE, default=['iphone', 'android', 'huawei'], max_length=LENGTH_DEVICE_TYPE
     )
     profession = MultiSelectField(
-        choices=PROFESSION, default=['etudient', 'fonctionnaire', 'commercant'], max_length=LENGTH_PROFESSION
+        choices=PROFESSION, default=['etudiant', 'fonctionnaire', 'commercant'], max_length=LENGTH_PROFESSION
     )
     register_type = MultiSelectField(
         choices=REGISTER_TYPE, default=['google', 'numero', 'email'], max_length=LENGTH_REGISTER_TYPE
@@ -487,9 +488,9 @@ class TargetedAdvertising(models.Model):
 
     seller = models.OneToOneField(Seller, on_delete=models.CASCADE)
     store = models.OneToOneField(Store, on_delete=models.CASCADE)
-    neighborhood = models.ManyToManyField(Neighborhood)
-    region = models.ManyToManyField(Region)
-    country = models.ManyToManyField(Country)
+    countries = models.ManyToManyField(Country, default=None)
+    regions = models.ManyToManyField(Region, default=None)
+    neighborhoods = models.ManyToManyField(Neighborhood, default=None)
 
     def __str__(self):
         return f"Publicité-{self.seller}-{self.store}"
