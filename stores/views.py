@@ -88,10 +88,23 @@ class BuyerViewSet(viewsets.ReadOnlyModelViewSet):
         first_name_startswith_params = list()
         last_name_startswith_params = list()
 
+        email_params = list()
+        num_tel_params = list()
+        birth_day_params = list()
+        device_type_params = list()
+        genre_params = list()
+        profession_params = list()
+        register_type_params = list()
+        method_of_payment_params = list()
+        account_type_params = list()
+        register_year_params = list()
+        register_month_params = list()
+        register_day_params = list()
+
         queryset = Buyer.objects.filter(active=True)
 
-        first_names = self.request.GET.get('first_names')
-        last_names = self.request.GET.get('last_names')
+        first_name = self.request.GET.get('first_name')
+        last_name = self.request.GET.get('last_name')
         first_name_startswith = self.request.GET.get('first_name_startswith')
         last_name_startswith = self.request.GET.get('last_name_startswith')
         email = self.request.GET.get('email')
@@ -107,34 +120,155 @@ class BuyerViewSet(viewsets.ReadOnlyModelViewSet):
         register_month = self.request.GET.get('register_month')
         register_day = self.request.GET.get('register_day')
 
-        first_names_list_queryset = list()
-        last_names_list_queryset = list()
+        first_name_list_queryset = list()
+        last_name_list_queryset = list()
         fist_name_startswith_queryset = list()
         last_name_startswith_queryset = list()
 
-        if first_names is not None:
-            if '[' in first_names and ']' in first_names:
-                first_names = first_names.replace('[', '').replace(']', '')
-                for param in first_names.split(','):
-                    first_name_params.append(str(param.capitalize()))
-                first_names_list_queryset = queryset.filter(first_name__in=first_name_params).distinct()
-            else:
-                first_names_list_queryset = queryset.filter(first_name__in=first_names).distinct()
+        email_list_queryset = list()
+        num_tel_list_queryset = list()
+        birth_day_list_queryset = list()
+        device_type_list_queryset = list()
+        genre_list_queryset = list()
+        profession_list_queryset = list()
+        register_type_list_queryset = list()
+        method_of_payment_list_queryset = list()
+        account_type_list_queryset = list()
+        register_year_list_queryset = list()
+        register_month_list_queryset = list()
+        register_day_list_queryset = list()
 
-        if last_names is not None:
-            if '[' in last_names and ']' in last_names:
-                last_names = last_names.replace('[', '').replace(']', '')
-                for param in last_names.split(','):
-                    last_name_params.append(str(param.capitalize()))
-                last_names_list_queryset = queryset.filter(last_name__in=last_name_params).distinct()
+        if first_name is not None:
+            if '[' in first_name and ']' in first_name:
+                first_name = first_name.replace('[', '').replace(']', '')
+                for param in first_name.split(','):
+                    first_name_params.append(str(param.capitalize()))
+                first_name_list_queryset = queryset.filter(first_name__in=first_name_params).distinct()
             else:
-                last_names_list_queryset = queryset.filter(last_name__in=last_names).distinct()
+                first_name_list_queryset = queryset.filter(first_name=first_name).distinct()
+
+        if last_name is not None:
+            if '[' in last_name and ']' in last_name:
+                last_name = last_name.replace('[', '').replace(']', '')
+                for param in last_name.split(','):
+                    last_name_params.append(str(param.capitalize()))
+                last_name_list_queryset = queryset.filter(last_name__in=last_name_params).distinct()
+            else:
+                last_name_list_queryset = queryset.filter(last_name=last_name).distinct()
+
+        if email is not None:
+            if '[' in email and ']' in email:
+                email = email.replace('[', '').replace(']', '')
+                for param in email.split(','):
+                    email_params.append(str(param))
+                email_list_queryset = queryset.filter(email__in=email_params).distinct()
+            else:
+                email_list_queryset = queryset.filter(email=email).distinct()
+
+        if num_tel is not None:
+            if '[' in num_tel and ']' in num_tel:
+                num_tel = num_tel.replace('[', '').replace(']', '')
+                for param in num_tel.split(','):
+                    num_tel_params.append(str(param))
+                num_tel_list_queryset = queryset.filter(num_tel__in=num_tel_params).distinct()
+            else:
+                num_tel_list_queryset = queryset.filter(num_tel=num_tel).distinct()
+
+        if birth_day is not None:
+            if '[' in birth_day and ']' in birth_day:
+                birth_day = birth_day.replace('[', '').replace(']', '')
+                for param in birth_day.split(','):
+                    birth_day_params.append(str(param))
+                birth_day_list_queryset = queryset.filter(birth_day__in=birth_day_params).distinct()
+            else:
+                birth_day_list_queryset = queryset.filter(birth_day=birth_day).distinct()
+
+        if device_type is not None:
+            if '[' in device_type and ']' in device_type:
+                device_type = device_type.replace('[', '').replace(']', '')
+                for param in device_type.split(','):
+                    device_type_params.append(str(param))
+                device_type_list_queryset = queryset.filter(device_type__in=device_type_params).distinct()
+            else:
+                device_type_list_queryset = queryset.filter(device_type=device_type).distinct()
+
+        if genre is not None:
+            if '[' in genre and ']' in genre:
+                genre = genre.replace('[', '').replace(']', '')
+                for param in genre.split(','):
+                    genre_params.append(str(param))
+                genre_list_queryset = queryset.filter(genre__in=genre_params).distinct()
+            else:
+                genre_list_queryset = queryset.filter(genre=genre).distinct()
+
+        if profession is not None:
+            if '[' in profession and ']' in profession:
+                profession = profession.replace('[', '').replace(']', '')
+                for param in profession.split(','):
+                    profession_params.append(str(param))
+                profession_list_queryset = queryset.filter(profession__in=profession_params).distinct()
+            else:
+                profession_list_queryset = queryset.filter(profession=profession).distinct()
+
+        if register_type is not None:
+            if '[' in register_type and ']' in register_type:
+                register_type = register_type.replace('[', '').replace(']', '')
+                for param in register_type.split(','):
+                    register_type_params.append(str(param))
+                register_type_list_queryset = queryset.filter(register_type__in=register_type_params).distinct()
+            else:
+                register_type_list_queryset = queryset.filter(register_type=register_type).distinct()
+
+        if method_of_payment is not None:
+            if '[' in method_of_payment and ']' in method_of_payment:
+                method_of_payment = method_of_payment.replace('[', '').replace(']', '')
+                for param in method_of_payment.split(','):
+                    method_of_payment_params.append(str(param))
+                method_of_payment_list_queryset = queryset.filter(method_of_payment__in=method_of_payment_params).distinct()
+            else:
+                method_of_payment_list_queryset = queryset.filter(method_of_payment=method_of_payment).distinct()
+
+        if account_type is not None:
+            if '[' in account_type and ']' in account_type:
+                account_type = account_type.replace('[', '').replace(']', '')
+                for param in account_type.split(','):
+                    account_type_params.append(str(param))
+                account_type_list_queryset = queryset.filter(account_type__in=account_type_params).distinct()
+            else:
+                account_type_list_queryset = queryset.filter(account_type=account_type).distinct()
+
+        if register_year is not None:
+            if '[' in register_year and ']' in register_year:
+                register_year = register_year.replace('[', '').replace(']', '')
+                for param in register_year.split(','):
+                    register_year_params.append(str(param))
+                register_year_list_queryset = queryset.filter(register_date__in=register_year_params).distinct()
+            else:
+                register_year_list_queryset = queryset.filter(register_date=register_year).distinct()
+
+        if register_month is not None:
+            if '[' in register_month and ']' in register_month:
+                register_month = register_month.replace('[', '').replace(']', '')
+                for param in register_month.split(','):
+                    register_month_params.append(str(param))
+                register_month_list_queryset = queryset.filter(register_date__in=register_month_params).distinct()
+            else:
+                register_month_list_queryset = queryset.filter(register_date=register_month).distinct()
+
+        if register_day is not None:
+            if '[' in register_day and ']' in register_day:
+                register_day = register_day.replace('[', '').replace(']', '')
+                for param in register_day.split(','):
+                    register_day_params.append(str(param))
+                register_day_list_queryset = queryset.filter(register_date__in=register_day_params).distinct()
+            else:
+                register_day_list_queryset = queryset.filter(register_date=register_day).distinct()
 
         # celui-là ne marche pas !
         if first_name_startswith is not None:
             first_name_startswith = first_name_startswith.replace('[', '').replace(']', '')
             for param in first_name_startswith.split(','):
-                first_name_startswith_params.append(str(param.capitalize()))
+                first_name_startswith_params.append(str(param))
             fist_name_startswith_queryset = queryset.filter(
                 first_name__istartswith=first_name_startswith_params
             ).distinct()
@@ -150,9 +284,15 @@ class BuyerViewSet(viewsets.ReadOnlyModelViewSet):
 
         response = list(
             chain(
-                first_names_list_queryset, last_names_list_queryset,
-                fist_name_startswith_queryset, last_name_startswith_queryset)
+                first_name_list_queryset, last_name_list_queryset,
+                fist_name_startswith_queryset, last_name_startswith_queryset,
+                email_list_queryset, num_tel_list_queryset, birth_day_list_queryset, device_type_list_queryset,
+                genre_list_queryset, profession_list_queryset, register_type_list_queryset,
+                method_of_payment_list_queryset, account_type_list_queryset, register_year_list_queryset,
+                register_month_list_queryset, register_day_list_queryset,
+            )
         )
+
         if response:
             return response
         else:

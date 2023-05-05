@@ -1,9 +1,10 @@
-from itertools import chain
-first_names_list_queryset = list()
-last_names_list_queryset = list()
-fist_name_startswith_queryset = list()
-response = list(chain(first_names_list_queryset, last_names_list_queryset, fist_name_startswith_queryset))
-if response:
-    print("Response exist")
-else:
-    print("Not exist")
+email = "['test1', 'test2']"
+email_params = list()
+if email is not None:
+    if '[' in email and ']' in email:
+        email = email.replace('[', '').replace(']', '')
+        for param in email.split(','):
+            email_params.append(str(param.capitalize()))
+        print("Non liste")
+    else:
+        print("Est list")
